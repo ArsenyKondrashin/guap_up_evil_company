@@ -37,14 +37,21 @@ public class bug : MonoBehaviour
 
     private void Update() // Метод, который вызывается каждый кадр
     {
+
         Move(); // Вызывает метод Move
+
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision) // Метод, который вызывается при столкновении с другим коллайдером
     {
+
         if (collision.gameObject == Hero.Instance.gameObject) // Если объект столкновения является героем
         {
+            DataHolder.MinusHp(1);
             Hero.Instance.GetDamage(); // Вызывает метод GetDamage у героя
         }
+
+
     }
 }

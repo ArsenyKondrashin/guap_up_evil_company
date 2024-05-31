@@ -9,7 +9,7 @@ public class finishwindow : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        await Task.Delay(10000);
+        await Task.Delay(8000);
         SceneManager.LoadScene(0);
     }
 

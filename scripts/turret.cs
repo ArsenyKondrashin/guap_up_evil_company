@@ -7,6 +7,7 @@ using UnityEngine;
 public class turret : MonoBehaviour
 {
     private Vector3 direction;
+    [SerializeField] private AudioSource fireSound;
 
     private Animator anim;
     // Start is called before the first frame update
@@ -28,37 +29,56 @@ public class turret : MonoBehaviour
     async void Update()
     {
         State = States.idle;
-        Collider2D[] colliders = Physics2D.OverlapAreaAll(transform.position + transform.up * 0.2f, transform.position + transform.right * direction.x * (-9f) + transform.up * (-0.1f));
-        if (colliders.Length > 0)
+        if (DataHolder.GetHpInfo() > 0)
         {
-            foreach (Collider2D collider in colliders)
-            {
-                if (collider.GetComponent<Hero>() == Hero.Instance)
-                {
-                    await Task.Delay(2500);
-                    Fire();
-                }
-            }
-        }
-    }
-    void Fire()
-    {
-        if (Hero.Instance.GetHp() > 0)
-        {
-            State = States.fire;
-            Collider2D[] colliders = Physics2D.OverlapAreaAll(transform.position + transform.up * 0.2f + transform.right * direction.x * (-0.3f), transform.position + transform.right * direction.x * (-9f) + transform.up * (-0.1f));
+            Collider2D[] colliders = Physics2D.OverlapAreaAll(transform.position + transform.up * 0.2f, transform.position + transform.right * direction.x * (-9f) + transform.up * (-0.1f));
             if (colliders.Length > 0)
             {
                 foreach (Collider2D collider in colliders)
                 {
-                    if (collider.GetComponent<Hero>() == Hero.Instance)
+                    if (DataHolder.GetHpInfo() > 0)
                     {
-                        Hero.Instance.GetDamage();
+                        if (collider.GetComponent<Hero>() == Hero.Instance)
+                        {
+                            await Task.Delay(1800);
+                            if (collider.GetComponent<Hero>() == Hero.Instance)
+                            {
+                                fireSound.Play();
+                            }
+                            await Task.Delay(700);
+                            if (collider.GetComponent<Hero>() == Hero.Instance)
+                            {
+                                Fire();
+                            }
+
+                        }
                     }
                 }
             }
-        }
 
+
+        }
+        void Fire()
+        {
+            if (DataHolder.GetHpInfo() > 0)
+            {
+
+                State = States.fire;
+                Collider2D[] colliders = Physics2D.OverlapAreaAll(transform.position + transform.up * 0.2f + transform.right * direction.x * (-0.3f), transform.position + transform.right * direction.x * (-9f) + transform.up * (-0.1f));
+                if (colliders.Length > 0)
+                {
+                    foreach (Collider2D collider in colliders)
+                    {
+                        if (collider.GetComponent<Hero>() == Hero.Instance)
+                        {
+                            DataHolder.MinusHp(1);
+                            Hero.Instance.GetDamage();
+                        }
+                    }
+                }
+            }
+
+        }
     }
     public enum States
     {

@@ -13,7 +13,7 @@ public class ship : MonoBehaviour
     }
 
     // Update is called once per frame
-    async void Update()
+    void Update()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1f);
         if (colliders.Length > 0)
@@ -22,7 +22,6 @@ public class ship : MonoBehaviour
             {
                 if (Hero.Instance.GetApparatusInfo())
                 {
-                    await Task.Delay(2000);
                     SceneManager.LoadScene(2);
                 }
 

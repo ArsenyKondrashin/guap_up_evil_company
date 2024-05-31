@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 using System.Runtime.CompilerServices;
 using UnityEngine.UI;
 using UnityEngine;
-using UnityEditor.SearchService;
 using System.Threading;
 
 
@@ -17,7 +16,6 @@ public class Hero : MonoBehaviour
     [SerializeField] private SpriteRenderer apparatusSpriteRenderer;
     [SerializeField] private Sprite apparatusSprite1;
     [SerializeField] private Sprite apparatusSprite2;
-
 
     [SerializeField] private float speed = 3f;
     [SerializeField] private float jump_force = 6f;
@@ -42,6 +40,8 @@ public class Hero : MonoBehaviour
     }
     private void Awake()
     {
+        DataHolder.NullScrap();
+        DataHolder.AddHp(5);
         stopMove = false;
         apparatusWindow = true;
         hp = 5;
@@ -58,39 +58,42 @@ public class Hero : MonoBehaviour
     }
     async private void Update()
     {
-
-        if (isGrounded)
+        if (hp > 0)
         {
-            State = States.idle;
-        }
-        else
-        {
-            State = States.jump;
-        }
-        if (Input.GetButton("Horizontal"))
-        {
-            Run();
-        }
-        if (isGrounded && Input.GetButtonDown("Jump"))
-        {
-            Jump();
-        }
-        for (int i = 0; i < health.Length; i++)
-        {
-            if (i + 1 > hp)
+            if (isGrounded)
             {
-                health[i].sprite = hpDead;
+                State = States.idle;
+            }
+            else
+            {
+                State = States.jump;
+            }
+            if (Input.GetButton("Horizontal"))
+            {
+                Run();
+            }
+            if (isGrounded && Input.GetButtonDown("Jump"))
+            {
+                Jump();
+            }
+            for (int i = 0; i < health.Length; i++)
+            {
+                if (i + 1 > hp)
+                {
+                    health[i].sprite = hpDead;
+                }
+            }
+            if (apparatus && apparatusWindow)
+            {
+                apparatusWindow = false;
+                stopMove = true;
+                apparatusSpriteRenderer.sprite = apparatusSprite2;
+                await Task.Delay(5000);
+                apparatusSpriteRenderer.sprite = apparatusSprite1;
+                stopMove = false;
             }
         }
-        if (apparatus && apparatusWindow)
-        {
-            apparatusWindow = false;
-            stopMove = true;
-            apparatusSpriteRenderer.sprite = apparatusSprite2;
-            await Task.Delay(5000);
-            apparatusSpriteRenderer.sprite = apparatusSprite1;
-            stopMove = false;
-        }
+
         if (hp <= 0)
         {
             Death();
@@ -130,7 +133,6 @@ public class Hero : MonoBehaviour
     public void Death()
     {
         State = States.dead;
-
         SceneManager.LoadScene(3);
     }
     public void AddScrap(int value)
